@@ -25,7 +25,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 Stockify   All rights reserved.</p>
+        <p>&copy; 2024 Stockify. All rights reserved.</p>
     </footer>
 
     <script>
@@ -151,7 +151,7 @@
         }
 
         function downloadFile(filename) {
-            const fileUrl = `/uploads/${filename}`;
+            const fileUrl = `/files/${filename}/download`; // Use the new download route
             const link = document.createElement('a');
             link.href = fileUrl;
             link.download = filename; // Set the file name for download

@@ -50,7 +50,7 @@ app.get("/", (req, res) => {
 });
 
 // Upload files
-app.post("/upload",(req, res) => {
+app.post("/upload", (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send("No files were uploaded.");
     }
@@ -79,7 +79,6 @@ app.post("/upload",(req, res) => {
         .then(() => res.send("Files uploaded successfully!"))
         .catch(err => res.status(500).send("Error uploading files: " + err.message));
 });
-
 
 // Get list of uploaded files
 app.get("/files", isAuthenticated, (req, res) => {
@@ -119,6 +118,26 @@ app.delete("/files/:filename", isAuthenticated, (req, res) => {
         res.sendStatus(200); // Send OK status
     });
 });
+
+// Download file
+app.get("/files/:filename/download", isAuthenticated, (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(uploadsDir, filename);
+    
+    // Check if file exists
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            return res.status(404).send("File not found.");
+        }
+
+        res.download(filePath, filename, (err) => {
+            if (err) {
+                return res.status(500).send("Error downloading file.");
+            }
+        });
+    });
+});
+
 
 // Logout
 app.get("/logout", (req, res) => {
