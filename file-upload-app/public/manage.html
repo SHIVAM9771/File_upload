@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Files</title>
+    <link rel="stylesheet" href="manage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Uploaded Files</h1>
+        <button id="logoutBtn" aria-label="Logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Uploaded Files</h2>
+            <ul id="fileList" role="list" aria-labelledby="fileList">
+                <!-- File items will be dynamically inserted here -->
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Stockify   All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadFiles);
+        
+        document.getElementById("logoutBtn").onclick = function() {
+            window.location.href = "/logout";
+        };
+
+        function loadFiles() {
+            fetch("/files")
+                .then(response => response.json())
+                .then(files => {
+                    const fileList = document.getElementById("fileList");
+                    fileList.innerHTML = ""; // Clear the list first
+                    files.forEach(file => {
+                        const li = document.createElement("li");
+
+                        // Create file name and button container
+                        const nameDiv = document.createElement("div");
+                        nameDiv.classList.add("file-name");
+                        nameDiv.textContent = file;
+
+                        const buttonDiv = createFileButtons(file);
+                        buttonDiv.classList.add("button-container");
+
+                        li.appendChild(nameDiv);
+                        li.appendChild(buttonDiv);
+                        fileList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching files:", error);
+                });
+        }
+
+        function createFileButtons(file) {
+            const buttonContainer = document.createElement("div");
+
+            const buttonConfigs = [
+                { text: "View", icon: "fas fa-eye", color: "blue", action: () => viewFile(file) },
+                { text: "Rename", icon: "fas fa-pencil-alt", color: "orange", action: () => renameFile(file) },
+                { text: "Delete", icon: "fas fa-trash", color: "red", action: () => deleteFile(file) },
+                { text: "Download", icon: "fas fa-download", color: "green", action: () => downloadFile(file) },
+            ];
+
+            buttonConfigs.forEach(config => {
+                const button = document.createElement("button");
+                button.textContent = config.text;
+                button.style.backgroundColor = config.color; // Set button color
+                button.onclick = config.action;
+
+                // Add icon to the button
+                const icon = document.createElement("i");
+                icon.className = config.icon;
+                button.prepend(icon); // Add icon to the beginning of the button
+
+                buttonContainer.appendChild(button);
+            });
+
+            return buttonContainer;
+        }
+
+        function viewFile(filename) {
+            const fileType = filename.split('.').pop();
+            const fileUrl = `/uploads/${filename}`;
+            if (['mp3', 'wav'].includes(fileType)) {
+                const audio = new Audio(fileUrl);
+                audio.controls = true;
+                audio.play();
+                document.body.appendChild(audio);
+            } else if (['mp4', 'webm', 'ogg'].includes(fileType)) {
+                const video = document.createElement('video');
+                video.src = fileUrl;
+                video.controls = true;
+                video.width = 600;
+                document.body.appendChild(video);
+                video.play();
+            } else if (['pdf', 'doc', 'docx', 'ppt', 'pptx'].includes(fileType)) {
+                window.open(fileUrl);
+            } else {
+                alert("File type not supported for viewing.");
+            }
+        }
+
+        function renameFile(oldName) {
+            const newName = prompt("Enter new name:", oldName);
+            if (newName && newName !== oldName) {
+                fetch(`/files/${oldName}/rename`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ newName }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        loadFiles(); // Reload the file list after renaming
+                    } else {
+                        console.error("Error renaming file:", response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error renaming file:", error);
+                });
+            }
+        }
+
+        function deleteFile(filename) {
+            fetch(`/files/${filename}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadFiles(); // Reload the file list after deletion
+                } else {
+                    console.error("Error deleting file:", response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting file:", error);
+            });
+        }
+
+        function downloadFile(filename) {
+            const fileUrl = `/uploads/${filename}`;
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = filename; // Set the file name for download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

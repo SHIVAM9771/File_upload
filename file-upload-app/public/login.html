@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Set a fixed width for better alignment */
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%; /* Full width for inputs */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        .password-container {
+            display: flex;
+            align-items: center; /* Center the icon vertically */
+        }
+
+        #togglePassword {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #007BFF;
+            font-size: 20px; /* Increase font size for better visibility */
+            margin-left: -35px; /* Adjust the icon position */
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+
+        #error-message {
+            margin-top: 10px;
+            color: red;
+            display: none; /* Initially hidden */
+        }
+
+        @media (max-width: 600px) {
+            form {
+                width: 90%; /* Responsive width for smaller screens */
+            }
+        }
+    </style>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="POST" action="/login">
+        <label for="username">
+            <i class="fas fa-user"></i> Username:
+        </label>
+        <input type="text" id="username" name="username" required>
+        
+        <label for="password">
+            <i class="fas fa-lock"></i> Password:
+        </label>
+        <div class="password-container">
+            <input type="password" id="password" name="password" required>
+            <button type="button" id="togglePassword">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+    
+    <div id="error-message">
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('error')) {
+                const errorMessage = document.createElement("p");
+                errorMessage.textContent = "Invalid username or password.";
+                document.getElementById("error-message").appendChild(errorMessage);
+                document.getElementById("error-message").style.display = "block"; // Show the error message
+            }
+        </script>
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        togglePassword.addEventListener("click", function() {
+            // Toggle the password visibility
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+
+            // Toggle the eye icon
+            eyeIcon.classList.toggle("fa-eye");
+            eyeIcon.classList.toggle("fa-eye-slash");
+        });
+    </script>
+</body>
+</html>

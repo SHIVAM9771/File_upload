@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #007BFF;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative; /* Enable positioning of logout button */
+}
+
+header h1 {
+    margin: 0;
+}
+
+#logoutBtn {
+    position: absolute; /* Position logout button */
+    top: 20px;
+    right: 20px;
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#logoutBtn:hover {
+    color: #ccc; /* Change color on hover */
+}
+
+button {
+    margin-left: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    display: flex; /* Align icon and text */
+    align-items: center; /* Center icon vertically */
+}
+
+button i {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+button:hover {
+    opacity: 0.9; /* Change opacity on hover for all buttons */
+}
+
+main {
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background: white;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-name {
+    flex-grow: 1; /* Allow file name to take up available space */
+    text-align: left; /* Align text to the left */
+}
+
+.button-container {
+    display: flex; /* Use flexbox to align buttons */
+    gap: 5px; /* Space between buttons */
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Specific colors for buttons */
+button {
+    background-color: blue; /* Default color for buttons */
+}
+
+button:nth-of-type(1) { /* View button */
+    background-color: blue;
+}
+
+button:nth-of-type(2) { /* Rename button */
+    background-color: orange;
+}
+
+button:nth-of-type(3) { /* Delete button */
+    background-color: red;
+}
+
+button:nth-of-type(4) { /* Download button */
+    background-color: green;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    header {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 18px;
+    }
+
+    button {
+        font-size: 12px;
+    }
+
+    li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+    }
+
+    li button {
+        margin: 5px 0;
+    }
+}

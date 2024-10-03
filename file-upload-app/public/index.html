@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            background: white;
+            padding: 40px; /* Increased padding */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+            width: 600px; /* Increased width */
+            text-align: center;
+            max-width: 90%; /* Responsive max width */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px; /* Increased margin */
+            font-size: 2.5em; /* Larger font size for title */
+        }
+
+        input[type="file"] {
+            display: none; /* Hide the default file input */
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 30px; /* Increased padding */
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Increased margin */
+            font-size: 18px; /* Larger font size */
+        }
+
+        .custom-file-upload:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px; /* Increased padding */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px; /* Larger font size */
+            margin: 10px 0; /* Increased margin */
+        }
+
+        button:hover {
+            background-color: #218838; /* Darken on hover */
+        }
+
+        #notification {
+            margin-top: 20px;
+            color: red; /* Default error color */
+            font-size: 16px; /* Larger font size */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px; /* Increased margin */
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 18px; /* Larger font size */
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .notification-success {
+            color: green; /* Success message color */
+        }
+
+        #fileList {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px; /* Increased margin */
+            text-align: left; /* Align file list to the left */
+        }
+
+        #fileList li {
+            margin: 10px 0; /* Increased margin */
+            padding: 15px; /* Increased padding */
+            background: #f0f0f0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center; /* Center align icons with text */
+            justify-content: flex-start; /* Align items to the left */
+            font-size: 20px; /* Larger font size */
+        }
+
+        #fileList li i {
+            margin-right: 15px; /* Space between icon and text */
+            font-size: 28px; /* Increased icon size */
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%; /* Responsive width for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-upload"></i> File Upload Dashboard</h1>
+        <label class="custom-file-upload">
+            <i class="fas fa-file-upload"></i> Select Files
+            <input type="file" id="fileInput" multiple required>
+        </label>
+        <button type="button" id="uploadButton"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+        <div id="notification"></div>
+        <ul id="fileList"></ul> <!-- Added for file previews -->
+        <a href="/login" target="_blank"><i class="fas fa-user-lock"></i> Admin Login</a>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const notification = document.getElementById('notification');
+        const fileList = document.getElementById('fileList');
+
+        // Function to get the icon based on file type
+        function getFileIcon(fileName) {
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            switch (fileExtension) {
+                case 'pdf':
+                    return 'fas fa-file-pdf';
+                case 'doc':
+                case 'docx':
+                    return 'fas fa-file-word';
+                case 'xls':
+                case 'xlsx':
+                    return 'fas fa-file-excel';
+                case 'ppt':
+                case 'pptx':
+                    return 'fas fa-file-powerpoint';
+                case 'txt':
+                    return 'fas fa-file-alt';
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                    return 'fas fa-file-image';
+                case 'gif':
+                    return 'fas fa-file-image';
+                case 'zip':
+                case 'rar':
+                    return 'fas fa-file-archive';
+                case 'mp4':
+                case 'avi':
+                    return 'fas fa-file-video';
+                case 'mp3':
+                case 'wav':
+                    return 'fas fa-file-audio';
+                default:
+                    return 'fas fa-file'; // Default icon for unknown file types
+            }
+        }
+
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            fileList.innerHTML = ''; // Clear the file list
+            for (const file of files) {
+                const listItem = document.createElement('li');
+                const iconClass = getFileIcon(file.name);
+                listItem.innerHTML = `<i class="${iconClass}"></i> ${file.name}`;
+                fileList.appendChild(listItem);
+            }
+        });
+
+        uploadButton.addEventListener('click', () => {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                notification.textContent = 'Please select at least one file.';
+                return;
+            }
+
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('files', file); // Ensure this matches the server-side key
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    notification.textContent = 'Files uploaded successfully!';
+                    notification.classList.add('notification-success');
+                    fileInput.value = ''; // Clear the file input
+                    fileList.innerHTML = ''; // Clear the file list
+                } else {
+                    const response = JSON.parse(xhr.responseText);
+                    notification.textContent = response.message || 'Error uploading files.';
+                    notification.classList.remove('notification-success'); // Remove success class
+                }
+            };
+
+            xhr.upload.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    notification.textContent = `Uploading: ${Math.round(percentComplete)}%`;
+                    notification.classList.remove('notification-success'); // Remove success class
+                }
+            };
+
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
